@@ -219,6 +219,7 @@ DEPENDENCIES
   devise
   factory_girl_rails
   faker
+  font-awesome-rails
   inherited_resources
   jquery-rails
   mocha (~> 0.14.0)

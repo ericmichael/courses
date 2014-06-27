@@ -20,6 +20,8 @@ gem 'coffee-rails', '~> 4.0.0'
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 
+gem 'font-awesome-rails'
+
 group :development, :test do
   gem 'rspec-rails', '~> 2'
   gem 'mocha', '~> 0.14.0'

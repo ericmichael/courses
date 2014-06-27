@@ -1,3 +1,15 @@
+/* Move down content because we have a fixed navbar that is 72px tall */
+body {
+  padding-top: 72px;
+  font-family: 'proxima-nova', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  /* The html and body elements cannot have any padding or margin. */
+}
+
 /* Wrapper for page content to push down footer */
 #wrap {
   min-height: 100%;

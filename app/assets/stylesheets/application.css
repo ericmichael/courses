@@ -33,10 +33,6 @@ body {
 
 /* ------------------------------- */
 
-#wrapper {
-    width: 100%;
-}
-
 #page-wrapper {
     padding: 0 15px;
     min-height: 568px;

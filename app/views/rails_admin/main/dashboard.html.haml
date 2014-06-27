@@ -1,0 +1,7 @@
+%h2 Subscription Stats
+
+%table.table.table-bordered
+  - SubscriptionPayment.stats.each do |period, amount|
+    %tr
+      %th= period.to_s.humanize
+      %td{ style: "text-align: right" }= number_to_currency(amount)

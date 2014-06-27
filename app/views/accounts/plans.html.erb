@@ -1,0 +1,42 @@
+<% # Plan grid from http://bootsnipp.com/snippets/featured/plans-and-pricing %>
+<h1>Plans</h1>
+
+<div class="row" id="plan-grid">
+  <% @plans.each do |plan| %>
+    <div class="col-xs-12 col-md-<%= 12 / @plans.size %>">
+      <div class="panel panel-primary">
+        <% if plan == @plans[1] %>
+          <div class="cnrflash">
+            <div class="cnrflash-inner">
+              <span class="cnrflash-label">MOST <br> POPULAR</span>
+            </div>
+          </div>
+        <% end %>
+        <div class="panel-heading">
+          <h3 class="panel-title"><%= plan.name %></h3>
+        </div>
+        <div class="panel-body">
+          <div class="the-price">
+            <h1> <%= number_to_currency(plan.amount) %><span class="subscript">/mo</span></h1>
+            <% if plan.amount > 0 %>
+              <small>1 month FREE trial</small>
+            <% else %>
+              <small>FREE forever :)</small>
+            <% end %>
+          </div>
+          <table class="table">
+            <tr>
+              <td>
+                <%= plan.user_limit.nil? ? 'Unlimited Users' : pluralize(plan.user_limit, 'User') %>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div class="panel-footer">
+          <%= link_to("Sign Up", new_account_url(:plan => plan, :discount => params[:discount]), :class => "btn btn-success") %>
+          <%= "1 month FREE trial" if plan.amount > 0 %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

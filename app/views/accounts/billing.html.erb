@@ -1,0 +1,45 @@
+<h1><%= @page_title = 'View / Change Billing Information' %></h1>
+
+<% if @subscription.state == 'trial' %>
+  <% if @subscription.next_renewal_at > Time.now %>
+    <p>
+      Thank you for trying <%= Saas::Config.app_name %>!  Your trial account will expire in <%= pluralize(@subscription.trial_days, 'day', 'days') %>, at which time you will no longer have access to your account.  To maintain access to your account, enter your credit card information below.  Your first charge will happen on <%= @subscription.next_renewal_at.to_s(:long_day) %>.
+    </p>
+  <% else %>
+    Thank you for trying <%= Saas::Config.app_name %>!  Your trial account has expired.  To regain access to your account, enter your credit card information below.  Your first charge will happen immediately, and you will be billed monthly thereafter.
+  <% end %>
+<% end %>
+
+<fieldset>
+  <label>Plan:</label>
+  <%= @subscription.subscription_plan.name %> (<a href="/account/plan">Change plan</a>)
+  
+  <% if @subscription.state == 'trial' %>
+    <label>Trial expiration date:</label>
+    <%= @subscription.next_renewal_at.to_s(:long_day) %>
+  <% else %>
+    <% if @subscription.amount > 0 %>
+      <label>Next charge date:</label>
+      <%= @subscription.next_renewal_at.to_s(:long_day) %>
+      <br/>
+      <label>Next charge amount:</label>
+      <%= number_to_currency @subscription.amount %>
+      <br/>
+      <label>Current payment method:</label>
+      <%= "#{@subscription.card_number} / #{@subscription.card_expiration}" %>
+    <% end %>
+  <% end %>
+</fieldset>
+
+<% if @subscription.amount > 0 %>
+  <%= render 'credit_card_form'  %>
+<% end %>
+
+<% content_for :head do %>
+  <script type="text/javascript" src="https://js.stripe.com/v1/"></script>
+  <%= javascript_include_tag 'stripe_form' %>
+  <script type="text/javascript">
+    // this identifies your website in the createToken call in stripe_form.js
+    Stripe.setPublishableKey('<%= Saas::Config.credentials['stripe_publishable_key'] %>');
+  </script>
+<% end if Saas::Config.gateway == 'stripe' and Saas::Config.credentials['stripe_publishable_key'] %>

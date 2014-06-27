@@ -1,0 +1,26 @@
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+  <div class="container">
+    <h1>Hello, world!</h1>
+    <p>This would be your public landing page. Find it in app/views/content/index.html.erb.</p>
+    <p><a class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a></p>
+  </div>
+</div>
+
+<!-- Example row of columns -->
+<div class="row">
+  <div class="col-md-6">
+    <h2>Powerful headline here</h2>
+    <p>You could explain why your app is so awesome.</p>
+    <p><%= link_to('Sign up for a new account', plans_path, class: "btn btn-default") %></p>
+  </div>
+  <div class="col-md-6">
+    <h2>Admin access</h2>
+    <% if admin = SaasAdmin.first %>
+      <p>You can check out the admin area with the login <strong><%= admin.email %></strong> and the password provided by <code>rake saas:bootstrap</code></p>
+      <p><%= link_to('Sign in', '/saas_admin', class: "btn btn-default") %></p>
+    <% else %>
+      <p>You should run <code>rake saas:bootstrap</code> (as mentioned in the README) to generate an admin login</p>
+    <% end %>
+  </div>
+</div>

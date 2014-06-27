@@ -1,0 +1,6 @@
+<h1>Change account settings</h1>
+
+<%= simple_form_for @account, :url => { :action => 'update' }, :html => { :method => :put } do |f| %>
+  <%= f.input :name %>
+  <%= submit_or_cancel :action => 'show' %>
+<% end %>

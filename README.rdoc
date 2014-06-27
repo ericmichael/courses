@@ -1,0 +1,181 @@
+== Welcome to the SaaS Rails Kit
+
+This Kit will help you get a quick start on building new web
+applications that need a recurring billing component and have
+multiple plan levels that are charged at varying rates. Typical
+examples of this kind of Rails application are the services
+offered by 37signals: Basecamp, Backpack, etc.
+
+The Kit comes configured to allow customers to create paid
+accounts with a 1 month free trial without collecting payment
+information. Emails are sent to remind customers when a trial
+account is about to expire, when the plan level gets changed, when
+payment is made, and when an account is canceled.
+
+Much of the functionality is in the saas-kit gem, not in this
+sample app.  The installation instructions below include information
+on how to install the gem.
+
+== Getting Started
+
+This code provides a complete, running Rails application. There
+are a few things you need to do to get started, though. First,
+edit the Gemfile, uncommenting the first line and changing the URL
+to include your order ID. Then, run the following commands on the
+command line:
+
+bundle install
+rake db:migrate saas:bootstrap
+
+This will create your database (by default the app is configured
+to use sqlite), load some sample data, and create a config file for
+you in config/saas.yml (which you should review).
+
+Please don't forget to check out config/secrets.yml for info
+on securing your application.
+
+Once that's done, you are ready to go. Start up the app and browse
+to it in your web browser. I highly recommend you use pow (http://pow.cx)
+to make working with subdomains easier. Log in with the information that was
+output during the rake task, and you'll be logged in as the admin
+user that can manage the subscriptions, etc.
+
+To change the account info for the admin user, edit the first record
+listed in SaasAdmins in the RailsAdmin dashboard.
+
+To log in as a normal user, go to the homepage of the app 
+(http://subscriptions.dev/ if you set up pow) and go through the
+account creation process.
+
+== Deploying to a Production Server
+
+This kit is designed to be served by a web server configured for
+name-based virtual hosting. In my deployments, I point the
+"default" configuration at the app so that traffic to any domain
+name not explicitly set in my other virtual host sections gets
+directed to the application.
+
+For the "public" web site, where one typically has a welcome page,
+tour, etc., you can add static page content to the views in
+app/views/content. Look for "other content routes" in 
+config/routes.rb to add routes for additional views you create.
+
+If you'd like to host your homepage separately (say you want to
+host your main domain with Wordpress or something) you can create
+a separate virtual host for www.yourdomain.com or yourdomain.com,
+and forward all urls that begin with /signup to the Rails
+application. You'll notice in config/routes.rb that the pricing
+grid, account creation page, and sign-up thank-you page are all
+served with urls that start with /signup. 
+
+If the layout for your public site will differ from the layout of
+the application, add a new layout to app/views/layouts and edit
+app/controllers/accounts_controller.rb to change the new, plans,
+and thanks actions to use that layout.
+
+The application is written to allow all admins to update their
+payment information while logged in to an account, which means
+that SSL connections will be attempted for all the subdomains of
+your base domain. Unless you want SSL certificate warnings for
+your customers, then, you'll need to get a wildcard SSL
+certificate. I use GoDaddy to purchase mine: currently $200 per
+year. Of course you could rewrite the billing action in
+app/controllers/accounts_controller.rb to redirect to a specific
+subdomain to avoid the cost of a wildcard SSL cert... feel free to
+do so. :)
+
+Make sure you set up a cron job to run 'rake saas:run_billing' on a
+daily basis. This script does the charging for account renewals
+and sends notices of expiring trials.
+
+== Integrating Into an Existing App
+
+If you'd like to pull the billing functionality into your app that
+you've already started, copy the relevant controller and model code
+into your existing app, and include the necessary gems from the Gemfile
+in your Gemfile. Then run 'bundle install', 'rails generate saas',
+and 'rake db:migrate' to get started.  
+
+== PayPal
+
+I have decided not to include PayPal support in this Kit.
+
+== Stripe
+
+This kit supports Stripe (stripe.com) via both their PCI compliant
+gateway, and secure JavaScript API. In both cases, you need to
+configure the gateway and credentials by setting "stripe" as the
+gateway and your secret key as the "login".
+
+Optionally, you may set the stripe_publishable_key value, which will
+take advantage of the JavaScript API (leave blank to use just the
+gateway). This method will use the same credit card form, but instead
+of posting the credit card info to your servers (requiring you to
+pass a higher-level PCI compliance standard), it will post the credit
+card info directly to Stripe servers.  The Kit will then get a token
+that it can use to bill the user's credit card.  In this manner, your
+user's credit card info never touches your server.  When using the
+javascript method, the credit card form will be disabled by default to
+prevent submitting the user from submitting sensitive information to
+your server when the user does not have a JavaScript capable browser.
+The form is then enabled by JavaScript, and the payment information
+will be submitted directly to Stripe.
+
+== Contents
+
+Hopefully you're familiar enough with the basics of Rails that I
+don't have to explain what every file in this archive does. If
+not, go read some books like Agile Web Development with Rails and
+then come back here. With that out of the way, here are some of
+the files you'll want to check out:
+
+app/
+  controllers/
+    users_controller.rb - Here's an example of how you can use
+    limits in your application. Notice the before filter to
+    enforce the limit, and the call to inherit_resources to pull
+    in generic RESTful methods. Also notice the
+    begin_of_association_chain method, which is used to scope all
+    the finds to the current account (the current_account method
+    is defined in lib/subscription_system). Use this pattern
+    throughout your application to make sure users only see the
+    data associated with their account.
+
+  models/
+    account.rb - Near the top of the file you'll notice call to
+    has_subscription, which is loads the saas gem and sets up the
+    various limits you'll be checking for plan eligibility and for
+    being able to do various things in your app. For example, the
+    user_limit entry in the hash checks the count of associated
+    users, and is used to create the reached_user_limit?
+    convenience method in the plugin.  Read the comments there for
+    info on setting up tiered plan levels for your app.
+
+    user.rb - Basic User model with some of Devise's functionality
+    overridden to make the login scoped by account (so you can
+    have one user with the same email address belonging to
+    multiple accounts).
+
+  views/
+    accounts/ - Views for updating billing, creating a new
+    account, etc. are here
+
+    content/ - Homepage content (splash page) and other content,
+    like an about page, privacy policy, etc. go here.
+
+config/
+  saas.yml - Some settings for the application, fairly
+  self-explanatory.  This is generated by the bootstrap task or
+  the generator.
+  
+You'll find the bulk of the recurring billing functionality located
+in the saas-kit gem.
+  
+== Testing
+
+If you'd like to run the included test suite, run 'rake spec'.
+
+For testing credit cards with the bogus gateway in development mode,
+use 1 for a valid card and 2 for an invalid one.  If you configure
+a different gateway for development mode, see your gateway provider's
+documentation for test card numbers.

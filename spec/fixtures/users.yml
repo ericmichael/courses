@@ -1,0 +1,20 @@
+
+#
+# login = account_admin, password = test
+#
+account_admin:
+  name: Account Admin
+  email: admin@example.com
+  encrypted_password: dd1fc6247a60092c811a90d410026f39b9f1a2ad20ed0461e132efbafa47a11a6dab59f517492065f5f465b830306268f9e7da53d8a33366db2c2e54eea3b420
+  admin: true
+  account: localhost
+
+#
+# login = account_user, password = test
+#
+account_user:
+  name: Account User
+  email: user@example.com
+  encrypted_password: dd1fc6247a60092c811a90d410026f39b9f1a2ad20ed0461e132efbafa47a11a6dab59f517492065f5f465b830306268f9e7da53d8a33366db2c2e54eea3b420
+  admin: false
+  account: localhost
